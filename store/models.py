@@ -46,6 +46,8 @@ class Order(models.Model):
 
     placed_at = models.DateTimeField(auto_now=True)
     payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_PENDING)
+    # Customers can have multiple orders
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
 
 class Address(models.Model):
