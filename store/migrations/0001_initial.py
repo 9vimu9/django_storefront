@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             name='Order',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('placed_at', models.DateTimeField(auto_now=True)),
+                ('placed_at', models.DateTimeField(auto_now_add=True)),
                 ('payment_status', models.CharField(choices=[('P', 'Pending'), ('C', 'Complete'), ('F', 'Failed')], default='P', max_length=1)),
                 ('customer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='store.customer')),
             ],
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ('inventory', models.IntegerField()),
                 ('last_update', models.DateTimeField(auto_now=True)),
                 ('collection', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='store.collection')),
-                ('promotions', models.ManyToManyField(to='store.promotion')),
+                ('promotions', models.ManyToManyField(to='store.Promotion')),
             ],
         ),
         migrations.CreateModel(

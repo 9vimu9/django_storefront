@@ -12,11 +12,10 @@ class Collection(models.Model):
 
 
 class Product(models.Model):
-    # sku = models.CharField(max_length=10, primary_key=True)
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     description = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
     # collection can have multiple products
@@ -52,7 +51,7 @@ class Order(models.Model):
         (PAYMENT_FAILED, 'Failed'),
     ]
 
-    placed_at = models.DateTimeField(auto_now=True)
+    placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_PENDING)
     # Customers can have multiple orders
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -65,6 +64,13 @@ class OrderItem(models.Model):
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
 
 
+class Address(models.Model):
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE)
+
+
 class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -73,9 +79,3 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
-
-
-class Address(models.Model):
-    street = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
