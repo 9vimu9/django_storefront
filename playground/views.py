@@ -4,36 +4,30 @@ from store.models import Product
 
 
 def say_hello(request):
-    # referencing columns
-    # products that have equal inventory and price
+    # ascending order by title
+    queryset = Product.objects.order_by('title')
 
-    # this doesn't work
-    # queryset = Product.objects.filter(inventory=unit_price)
+    # descending order by title
+    queryset = Product.objects.order_by('-title')
 
-    # using F objects
-    queryset = Product.objects.filter(inventory=F('unit_price'))
-    #     SELECT `store_product`.`id`,
-    #     `store_product`.`title`,
-    #     `store_product`.`slug`,
-    #     `store_product`.`description`,
-    #     `store_product`.`unit_price`,
-    #     `store_product`.`inventory`,
-    #     `store_product`.`last_update`,
-    #     `store_product`.`collection_id`
-    # FROM `store_product`
-    # WHERE `store_product`.`inventory` = (`store_product`.`unit_price`)
+    # sort with multiple columns
+    # sorts smallest to the largest price, but when same price, it is sorted by title, but in descending order
+    queryset = Product.objects.order_by('unit_price', '-title')
 
-    # F objects and referencing
-    queryset = Product.objects.filter(inventory=F('collection__id'))
-    #     SELECT `store_product`.`id`,
-    #     `store_product`.`title`,
-    #     `store_product`.`slug`,
-    #     `store_product`.`description`,
-    #     `store_product`.`unit_price`,
-    #     `store_product`.`inventory`,
-    #     `store_product`.`last_update`,
-    #     `store_product`.`collection_id`
-    # FROM `store_product`
-    # WHERE `store_product`.`inventory` = (`store_product`.`collection_id`)
+    # reverse the direction of sort
+    queryset = queryset.reverse()
+
+    # can be used after the filter
+    queryset = Product.objects.filter(unit_price_gte=20).order_by('-unit_price')
+
+    # sort and pick first result
+    # --------------------------
+    # slicing
+    most_expensive_product = Product.objects.order_by('-unit_price')[0]
+    # after slicing, it no longer returns queryset
+
+    # earliest or latest
+    chepest_product = Product.objects.earliest('unit_price')
+    most_expensive_product = Product.objects.latest('unit_price')
 
     return render(request, 'hello.html', {'name': 'Vim', 'products': list(queryset)})
