@@ -4,30 +4,23 @@ from store.models import Product
 
 
 def say_hello(request):
-    # ascending order by title
-    queryset = Product.objects.order_by('title')
+    # first 5 products
+    # 0,1,2,3,4
+    queryset = Product.objects.all()[:5]
 
-    # descending order by title
-    queryset = Product.objects.order_by('-title')
-
-    # sort with multiple columns
-    # sorts smallest to the largest price, but when same price, it is sorted by title, but in descending order
-    queryset = Product.objects.order_by('unit_price', '-title')
-
-    # reverse the direction of sort
-    queryset = queryset.reverse()
-
-    # can be used after the filter
-    queryset = Product.objects.filter(unit_price_gte=20).order_by('-unit_price')
-
-    # sort and pick first result
-    # --------------------------
-    # slicing
-    most_expensive_product = Product.objects.order_by('-unit_price')[0]
-    # after slicing, it no longer returns queryset
-
-    # earliest or latest
-    chepest_product = Product.objects.earliest('unit_price')
-    most_expensive_product = Product.objects.latest('unit_price')
+    # next 5 products after the first 5
+    # 5,6,7,8,9
+    queryset = Product.objects.all()[5:10]
+    #     SELECT `store_product`.`id`,
+    #     `store_product`.`title`,
+    #     `store_product`.`slug`,
+    #     `store_product`.`description`,
+    #     `store_product`.`unit_price`,
+    #     `store_product`.`inventory`,
+    #     `store_product`.`last_update`,
+    #     `store_product`.`collection_id`
+    # FROM `store_product`
+    # LIMIT 5
+    # OFFSET 5
 
     return render(request, 'hello.html', {'name': 'Vim', 'products': list(queryset)})
