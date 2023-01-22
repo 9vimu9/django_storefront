@@ -4,11 +4,14 @@ from store.models import Product, OrderItem
 
 
 def say_hello(request):
-    # select_related can be used to connect 2 tables
-    # with one-to-many relationship
-    queryset = Product.objects.select_related('collection').all()
 
-    # let's say collection has a relationship with a table, and
-    # we need access to it.
-    queryset = Product.objects.select_related('collection__someothertable').all()
+    # select_related => one-to-many
+    # prefetch_related => many-to-many
+    queryset = Product.objects.prefetch_related('promotions').all()
+
+    # can add both in a single queryset
+    queryset = Product.objects.\
+        select_related('collection').\
+        prefetch_related('promotions').all()
+
     return render(request, 'hello.html', {'name': 'Vim', 'products': list(queryset)})
