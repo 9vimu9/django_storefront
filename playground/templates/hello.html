@@ -7,10 +7,11 @@
     {% endif %}
   <ul>
       {% for product in products %}
-      <li>{{ product.unit_price }}</li>
-{# with only or defer if we try to show data of unspecified columns, #}
-{# it will execute mysql query for#}
-{# every iteration#}
+      <li>{{ product.title }}-{{ product.collection.title }}</li>
+{# here we try to get collection title using relationship #}
+{# because one to many relationship is defined in models.py #}
+{# but in views.py it is not defined that collection data will be accessed #}
+{# therefore it retrive collection title by executing query in every iteration #}
       {% endfor %}
   </ul>
   </body>
