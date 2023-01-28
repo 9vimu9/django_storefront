@@ -5,20 +5,26 @@ from store.models import Product, OrderItem, Order, Customer
 
 
 def say_hello(request):
-    # CONCAT using Func object
-    queryset = Customer.objects.annotate(
-        full_name=Func(F('first_name'), Value(' '), F('last_name'), function='CONCAT')
-    )
+    # task :
+    # add temporary column orders_count
+    # store order count for that customer in orders_count column
+
+    # Order model has customer Foreign Key
+    # we can take customer of an order (order --> customer)
+    # inversely we should be able to  get orders of a customer as well (customer --> Orders)
+    # we can use `order_set` to do it
+
+    # but here it doesn't work
+    # order_set --> order
+
     # SELECT `store_customer`.`id`,
     # ...
-    # CONCAT(`store_customer`.`first_name`, ' ', `store_customer`.`last_name`) AS `full_name`
+    # COUNT(`store_order`.`id`) AS `orders_count`
     # FROM `store_customer`
+    # LEFT OUTER JOIN `store_order`
+    # ON (`store_customer`.`id` = `store_order`.`customer_id`)
+    # GROUP BY `store_customer`.`id`
+    # ORDER BY NULL
 
-    # CONCAT using Concat object
-    queryset = Customer.objects.annotate(
-        full_name=Concat('first_name', Value(' '), 'last_name')
-    )
-    # more info about Django database functions
-    # https://docs.djangoproject.com/en/4.1/ref/models/database-functions/
-
+    queryset = Customer.objects.annotate(orders_count=Count('order'))
     return render(request, 'hello.html', {'name': 'Vim', 'products': list(queryset)})
