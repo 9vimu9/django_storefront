@@ -22,12 +22,15 @@ def product_list(request):
         serializer.save()
         return Response('ok')
 
-@api_view()
-def product_detail(request, id):
-    product = get_object_or_404(Product, pk=id)
-    serializer = ProductSerializer(product)
-    return Response(serializer.data)
 
+@api_view(['GET', 'PUT'])
+def product_detail(request, id):
+    if request.method == 'GET':
+        product = get_object_or_404(Product, pk=id)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    if request.method == 'PUT':
+        return Response("Updated")
 
 @api_view
 def collection_detail(request, pk):
