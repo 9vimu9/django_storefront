@@ -18,23 +18,8 @@ def product_list(request):
 
     if request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():  # check input data are valid
-            return Response('ok')
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            #  if input is invalid set status to 400 and returns errors like follow
-            # {
-            #     "title": [
-            #         "This field is required."
-            #     ],
-            #     "unit_price": [
-            #         "This field is required."
-            #     ],
-            #     "collection": [
-            #         "This field is required."
-            #     ]
-            # }
-
+        serializer.is_valid(raise_exception=True) # if the data is invalid, returns 400 with error message
+        return Response('ok')
 
 @api_view()
 def product_detail(request, id):
