@@ -35,6 +35,8 @@ def product_detail(request, id):
         serializer.save()
         return Response(serializer.data)
     if request.method == 'DELETE':
+        if product.orderitem_set.count() > 0:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
