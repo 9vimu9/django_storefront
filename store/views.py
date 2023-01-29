@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -7,8 +8,6 @@ from store.serializers import ProductSerializer
 
 
 @api_view(['GET', 'POST'])
-# all the POST and GET requests come to
-# /store/products will be redirected to the product_list
 def product_list(request):
     if request.method == 'GET':
         queryset = Product.objects.select_related('collection').all()
@@ -18,10 +17,23 @@ def product_list(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        # if the request is POST we can use the same serializer to convert
-        # request using 'data' keyword
         serializer = ProductSerializer(data=request.data)
-        return Response('ok')
+        if serializer.is_valid():  # check input data are valid
+            return Response('ok')
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            #  if input is invalid set status to 400 and returns errors like follow
+            # {
+            #     "title": [
+            #         "This field is required."
+            #     ],
+            #     "unit_price": [
+            #         "This field is required."
+            #     ],
+            #     "collection": [
+            #         "This field is required."
+            #     ]
+            # }
 
 
 @api_view()
