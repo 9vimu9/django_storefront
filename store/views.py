@@ -54,7 +54,7 @@ def collection_detail(request, pk):
         serializer.save()
         return Response(serializer.data)
     if request.method == 'DELETE':
-        if collection.product_set.count() > 0:
+        if collection.products.count() > 0:
             return Response({'error': 'Collection cannot be deleted because it is associated with an product.'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         collection.delete()
