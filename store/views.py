@@ -1,6 +1,4 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -11,7 +9,9 @@ from store.serializers import ProductSerializer
 @api_view()
 def product_list(request):
     queryset = Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(queryset, many=True)  # set many to True show it converts multiple data
+    serializer = ProductSerializer(queryset, many=True, context={
+        'request': request
+    })
     return Response(serializer.data)
 
 
