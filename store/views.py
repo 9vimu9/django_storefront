@@ -10,7 +10,7 @@ from store.serializers import ProductSerializer
 
 @api_view()
 def product_list(request):
-    queryset = Product.objects.all()
+    queryset = Product.objects.select_related('collection').all()
     serializer = ProductSerializer(queryset, many=True)  # set many to True show it converts multiple data
     return Response(serializer.data)
 
