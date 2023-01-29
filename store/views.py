@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from store.models import Product
-from store.serializers import ProductSerializer
+from store.models import Product, Collection
+from store.serializers import ProductSerializer, CollectionSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -41,6 +41,23 @@ def product_detail(request, id):
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @api_view
 def collection_detail(request, pk):
     return Response('ok')
+
+
+@api_view(['GET', 'POST'])
+def collection_list(request):
+    if request.method == 'GET':
+        queryset = Collection.objects.all()
+        serializer = CollectionSerializer(queryset, many=True, context={
+            'request': request
+        })
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = CollectionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
