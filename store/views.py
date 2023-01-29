@@ -19,10 +19,7 @@ def product_list(request):
     if request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(serializer.validated_data)
-        # OrderedDict([('title', 'Hinge W Undercut'), ('unit_price', Decimal('20.24')), ('collection', <Collection: collection1>)])
-        # so validated_data not just giving data, it creates object using the data.
-        # here we don't get collection_id, instead of that we get collection object
+        serializer.save()
         return Response('ok')
 
 @api_view()
