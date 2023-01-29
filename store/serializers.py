@@ -10,9 +10,9 @@ class CollectionSerializer(serializers.Serializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'collection']
+        fields = ['id', 'title', 'unit_price', 'price_with_tax', 'collection']
 
-    price = serializers.DecimalField(max_digits=6, decimal_places=4, source='unit_price')
+    price_with_tax = serializers.SerializerMethodField(method_name='calculate_tax')
 
 
     def calculate_tax(self, product: Product):
