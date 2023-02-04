@@ -26,8 +26,8 @@ class ProductList(APIView):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def product_detail(request, id):
-    product = get_object_or_404(Product, pk=id)
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
     if request.method == 'GET':
         serializer = ProductSerializer(product)
         return Response(serializer.data)
