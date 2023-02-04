@@ -7,11 +7,11 @@ router.register('products', views.ProductViewSet)
 router.register('collections', views.CollectionViewSet)
 
 # setup nested router
-products_router = routers.NestedSimpleRouter(router, 'products', lookup='product_pk')
+products_router = routers.NestedSimpleRouter(router, 'products', lookup='product')
 """
 router -> parent router
 products -> pre-fix of the parent router that is used during parent router registration.
-lookup='product_pk' -> The regex variable that matches an instance of the parent-resource
+lookup='product' -> The regex variable that matches an instance of the parent-resource
 will be called '<lookup>_<parent-viewset.lookup_field>'
 In the example above, lookup=domain and the parent viewset looks up
 on 'pk' so the parent lookup regex will be 'domain_pk'.
