@@ -8,8 +8,17 @@ from store.serializers import ProductSerializer, CollectionSerializer, ReviewSer
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    # since we removed queryset variable, Django cannot figure out the base name.
+    # therefore product basename is specified in store/urls.py
     serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        # get parameter 'collection_id'. returns None if doesn't exist
+        collection_id = self.request.query_params.get('collection_id')
+        if collection_id is not None:
+            queryset = queryset.filter(collection_id=collection_id)
+        return queryset
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -49,12 +58,3 @@ class ReviewViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
-
-
-'''
-    all the reviews are not shown at once.
-    all the reviews of a product are only shown.
-    therefore filter is used to remove reviews of other product.
-    we have http://localhost:8000/store/products/<PRODUCT_ID>/reviews/
-    not http://localhost:8000/store/reviews/
-'''

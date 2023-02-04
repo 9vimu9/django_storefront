@@ -3,7 +3,7 @@ from rest_framework_nested import routers
 from . import views
 
 router = routers.SimpleRouter()  # SimpleRouter replaced by NestedSimpleRouter
-router.register('products', views.ProductViewSet)
+router.register('products', views.ProductViewSet, basename='products')
 router.register('collections', views.CollectionViewSet)
 
 # setup nested router
