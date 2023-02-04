@@ -8,9 +8,6 @@ from store.models import Product, Collection
 from store.serializers import ProductSerializer, CollectionSerializer
 
 
-# ViewSet can be used to combine multiple views that share same queryset and serializers
-# ViewSet overrides following methods. get,post,put,patch,delete
-# here we combined ProductDetail and ProductList classes
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -27,11 +24,14 @@ class ProductViewSet(ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CollectionDetail(RetrieveUpdateDestroyAPIView):
+class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(
         products_count=Count('products')
     ).all()
     serializer_class = CollectionSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def delete(self, request, pk):
         collection = get_object_or_404(Collection, pk=pk)
@@ -40,13 +40,3 @@ class CollectionDetail(RetrieveUpdateDestroyAPIView):
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         collection.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class CollectionList(ListCreateAPIView):
-    queryset = Collection.objects.annotate(
-        products_count=Count('products')
-    ).all()
-    serializer_class = CollectionSerializer
-
-    def get_serializer_context(self):
-        return {'request': self.request}
