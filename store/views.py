@@ -8,22 +8,16 @@ from store.serializers import ProductSerializer, CollectionSerializer
 
 
 class ProductList(ListCreateAPIView):
+    queryset = Product.objects.select_related('collection').all()
+    # when the 'get_queryset' is a one-liner
 
-    # instead of APIView, we can use ListCreateAPIView,
-    # it is a child of the APIView.
-    # so 'get' and 'post' methods are overridden by the ListCreateAPIView
-    # in ListCreateView
-    # get -> will call 'get_queryset' to get queryset and 'get_serializer_class' to get the serializer. then it transforms
-    # the queryset data using serializer and returns.[so we can override to supply our data.]
-    # post -> request data will convert using the given serializer, validates, saves
-    def get_queryset(self):
-        return Product.objects.select_related('collection').all()
+    serializer_class = ProductSerializer
 
-    def get_serializer_class(self):
-        return ProductSerializer  # not an object of the serializer, serializer name only.
+    # when the get_serializer_class is a one-liner
 
     def get_serializer_context(self):
         return {'request': self.request}
+    # no property for serializer_context
 
 
 class ProductDetail(APIView):
