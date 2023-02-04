@@ -2,6 +2,7 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -11,10 +12,13 @@ from store.serializers import ProductSerializer, CollectionSerializer, ReviewSer
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()  # restored 'queryset', removed 'get_queryset_class'
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [DjangoFilterBackend]  # enabled Django filter
+    filter_backends = [DjangoFilterBackend, SearchFilter]  # Added Search Filter
     filterset_class = ProductFilter  # set filter class
+    search_fields = ['title', 'description']
+    # adding fields to be searched. input string will be searched in those columns
+    # http://localhost:8000/store/products/?search=QUERY
 
     def get_serializer_context(self):
         return {'request': self.request}
