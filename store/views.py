@@ -3,22 +3,20 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from store.models import Product, Collection
 from store.serializers import ProductSerializer, CollectionSerializer
 
 
-class ProductList(ListCreateAPIView):
-    queryset = Product.objects.select_related('collection').all()
+# ViewSet can be used to combine multiple views that share same queryset and serializers
+# ViewSet overrides following methods. get,post,put,patch,delete
+# here we combined ProductDetail and ProductList classes
+class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     def get_serializer_context(self):
         return {'request': self.request}
-
-
-class ProductDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
 
     def delete(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
