@@ -1,27 +1,29 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from store.models import Product, Collection
 from store.serializers import ProductSerializer, CollectionSerializer
 
 
-class ProductList(APIView):
-    def get(self, request):
-        queryset = Product.objects.select_related('collection').all()
-        serializer = ProductSerializer(
-            queryset,
-            many=True,
-            context={'request': request}
-        )
-        return Response(serializer.data)
+class ProductList(ListCreateAPIView):
 
-    def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # instead of APIView, we can use ListCreateAPIView,
+    # it is a child of the APIView.
+    # so 'get' and 'post' methods are overridden by the ListCreateAPIView
+    # in ListCreateView
+    # get -> will call 'get_queryset' to get queryset and 'get_serializer_class' to get the serializer. then it transforms
+    # the queryset data using serializer and returns.[so we can override to supply our data.]
+    # post -> request data will convert using the given serializer, validates, saves
+    def get_queryset(self):
+        return Product.objects.select_related('collection').all()
+
+    def get_serializer_class(self):
+        return ProductSerializer  # not an object of the serializer, serializer name only.
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
 class ProductDetail(APIView):
