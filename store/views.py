@@ -9,15 +9,10 @@ from store.serializers import ProductSerializer, CollectionSerializer
 
 class ProductList(ListCreateAPIView):
     queryset = Product.objects.select_related('collection').all()
-    # when the 'get_queryset' is a one-liner
-
     serializer_class = ProductSerializer
-
-    # when the get_serializer_class is a one-liner
 
     def get_serializer_context(self):
         return {'request': self.request}
-    # no property for serializer_context
 
 
 class ProductDetail(APIView):
@@ -64,16 +59,9 @@ class CollectionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CollectionList(APIView):
-    def get(self, request):
-        queryset = Collection.objects.all()
-        serializer = CollectionSerializer(queryset, many=True, context={
-            'request': request
-        })
-        return Response(serializer.data)
+class CollectionList(ListCreateAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
 
-    def post(self, request):
-        serializer = CollectionSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_serializer_context(self):
+        return {'request': self.request}
