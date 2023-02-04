@@ -1,24 +1,20 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+from store.filters import ProductFilter
 from store.models import Product, Collection, Review
 from store.serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 
 
 class ProductViewSet(ModelViewSet):
-    # since we removed queryset variable, Django cannot figure out the base name.
-    # therefore product basename is specified in store/urls.py
+    queryset = Product.objects.all()  # restored 'queryset', removed 'get_queryset_class'
     serializer_class = ProductSerializer
-
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        # get parameter 'collection_id'. returns None if doesn't exist
-        collection_id = self.request.query_params.get('collection_id')
-        if collection_id is not None:
-            queryset = queryset.filter(collection_id=collection_id)
-        return queryset
+    filter_backends = [DjangoFilterBackend]  # enabled Django filter
+    filterset_class = ProductFilter  # set filter class
 
     def get_serializer_context(self):
         return {'request': self.request}
