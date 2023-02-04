@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView
@@ -60,7 +61,9 @@ class CollectionDetail(APIView):
 
 
 class CollectionList(ListCreateAPIView):
-    queryset = Collection.objects.all()
+    queryset = Collection.objects.annotate(
+        products_count=Count('products')
+    ).all()
     serializer_class = CollectionSerializer
 
     def get_serializer_context(self):
