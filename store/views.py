@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from store.models import Product, Collection
@@ -16,19 +16,12 @@ class ProductList(ListCreateAPIView):
         return {'request': self.request}
 
 
-class ProductDetail(APIView):
-    def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
+class ProductDetail(RetrieveUpdateDestroyAPIView):
+    # RetrieveUpdateDestroyAPIView comes with 'get','put','patch' and 'delete' methods.
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
-    def put(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
+    # delete method cannot be overridden because it is included some business logic that Django doesn't aware
     def delete(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if product.orderitems.count() > 0:
