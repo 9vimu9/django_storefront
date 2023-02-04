@@ -1,7 +1,6 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from store.models import Product, Collection
@@ -15,8 +14,10 @@ class ProductViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'request': self.request}
 
-    def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+    #   RetrieveUpdateDestroyAPIView does have a 'delete' method, but ViewSet has 'destroy' method, not 'delete'
+    #   therefore we override 'destroy' here
+    def destroy(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, pk=kwargs['pk'])
         if product.orderitems.count() > 0:
             return Response({'error': 'Product cannot be deleted because it is associated with an order item.'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -33,8 +34,8 @@ class CollectionViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'request': self.request}
 
-    def delete(self, request, pk):
-        collection = get_object_or_404(Collection, pk=pk)
+    def destroy(self, request, *args, **kwargs):
+        collection = get_object_or_404(Collection, pk=kwargs['pk'])
         if collection.products.count() > 0:
             return Response({'error': 'Collection cannot be deleted because it is associated with an product.'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
