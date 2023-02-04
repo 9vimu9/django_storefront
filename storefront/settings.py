@@ -141,5 +141,6 @@ INTERNAL_IPS = [
 ]
 
 REST_FRAMEWORK = {
-    'COERCE_DECIMAL_TO_STRING': False  # to show doubles not as string
+    'COERCE_DECIMAL_TO_STRING': False,
+    'PAGE_SIZE': 10
 }
