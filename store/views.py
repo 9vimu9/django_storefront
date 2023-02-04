@@ -17,11 +17,9 @@ class ProductList(ListCreateAPIView):
 
 
 class ProductDetail(RetrieveUpdateDestroyAPIView):
-    # RetrieveUpdateDestroyAPIView comes with 'get','put','patch' and 'delete' methods.
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    # delete method cannot be overridden because it is included some business logic that Django doesn't aware
     def delete(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if product.orderitems.count() > 0:
@@ -31,18 +29,11 @@ class ProductDetail(RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CollectionDetail(APIView):
-    def get(self, request, pk):
-        collection = get_object_or_404(Collection, pk=pk)
-        serializer = CollectionSerializer(collection)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        collection = get_object_or_404(Collection, pk=pk)
-        serializer = CollectionSerializer(collection, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+class CollectionDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Collection.objects.annotate(
+        products_count=Count('products')
+    ).all()
+    serializer_class = CollectionSerializer
 
     def delete(self, request, pk):
         collection = get_object_or_404(Collection, pk=pk)
