@@ -14,8 +14,6 @@ class ProductViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'request': self.request}
 
-    #   RetrieveUpdateDestroyAPIView does have a 'delete' method, but ViewSet has 'destroy' method, not 'delete'
-    #   therefore we override 'destroy' here
     def destroy(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
         if product.orderitems.count() > 0:
@@ -44,15 +42,19 @@ class CollectionViewSet(ModelViewSet):
 
 
 class ReviewViewSet(ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.filter(product_id=self.kwargs['product_pk'])
 
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
 
 
 '''
-get_serializer_context can be used to send additional info to serializer
-product_pk -> http://localhost:8000/store/products/<PRODUCT_PK>/reviews/1/
-we set this name during nested route creation
+    all the reviews are not shown at once.
+    all the reviews of a product are only shown.
+    therefore filter is used to remove reviews of other product.
+    we have http://localhost:8000/store/products/<PRODUCT_ID>/reviews/
+    not http://localhost:8000/store/reviews/
 '''
