@@ -104,8 +104,15 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    # changed related name from cartitem_set to items.
-    # so in Cart model we have field called items
+    class Meta:
+        unique_together = [['cart', 'product']]
+        '''
+        there should not be multiple records of same product for a cart.
+        if customer added same product multiple times to the cart, new record mustn't be added.
+        instead of that, existing  record must be updated.
+        unique constraint --> unique_together
+        '''
+
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
