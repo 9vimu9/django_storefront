@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -97,6 +99,14 @@ class Address(models.Model):
 
 
 class Cart(models.Model):
+    '''
+    to add items to cart, user should be logged in.
+    that means cart URLs are not authenticated.
+    so if we use incremental primary key, then hackers can easily do attacks.
+    therefore primary key is changed to GUID.
+    GUID type is 'uuid4' (nor rhe function , reference only
+    '''
+    id = models.UUIDField(primary_key=True, default=uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -112,70 +122,3 @@ class Review(models.Model):
     description = models.TextField()
     date = models.DateField(auto_now_add=True)
 
-
-'''
-TASK
-URL PATTERN
-METHOD
-REQUEST
-RESPONSE
-
-Creating a cart
---------------
-/carts 
-POST
-{}
-cart object
-
-Getting a cart
---------------
-/carts/:id 
-GET
-{}
-cart object
-
-Deleting a cart
----------------
-/carts/:id 
-DELETE
-{}
-{}
-
-adding an item to a cart
------------------------
-/carts/:id/items 
-POST
-{product_id, quantity}
-item object
-
-Updating the ordered quantity an item
--------------------------------------
-/carts/:id/items/:id 
-PATCH
-{quantity}
-{quantity}
-
-we use patch here because part of the item is updated.
-Deleting an item
-----------------
-/carts/:id/items/:id 
-DELETE
-{}
-{}
-
-'''
-
-'''
-SUMMARY
-========
-Following ViewSets will be created.
-CartViewSet
------------
-/carts
-/carts/:id
-
-CartItemViewSet
---------------
-/carts/:id/items
-/carts/:id/items/:id
-'''
