@@ -111,3 +111,71 @@ class Review(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     date = models.DateField(auto_now_add=True)
+
+
+'''
+TASK
+URL PATTERN
+METHOD
+REQUEST
+RESPONSE
+
+Creating a cart
+--------------
+/carts 
+POST
+{}
+cart object
+
+Getting a cart
+--------------
+/carts/:id 
+GET
+{}
+cart object
+
+Deleting a cart
+---------------
+/carts/:id 
+DELETE
+{}
+{}
+
+adding an item to a cart
+-----------------------
+/carts/:id/items 
+POST
+{product_id, quantity}
+item object
+
+Updating the ordered quantity an item
+-------------------------------------
+/carts/:id/items/:id 
+PATCH
+{quantity}
+{quantity}
+
+we use patch here because part of the item is updated.
+Deleting an item
+----------------
+/carts/:id/items/:id 
+DELETE
+{}
+{}
+
+'''
+
+'''
+SUMMARY
+========
+Following ViewSets will be created.
+CartViewSet
+-----------
+/carts
+/carts/:id
+
+CartItemViewSet
+--------------
+/carts/:id/items
+/carts/:id/items/:id
+'''
