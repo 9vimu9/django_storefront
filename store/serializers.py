@@ -34,7 +34,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+
     class Meta:
         model = Cart
         fields = ['id']
-# sending created_at to frontend no use, it is for backend tasks
