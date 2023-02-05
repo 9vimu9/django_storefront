@@ -99,19 +99,14 @@ class Address(models.Model):
 
 
 class Cart(models.Model):
-    '''
-    to add items to cart, user should be logged in.
-    that means cart URLs are not authenticated.
-    so if we use incremental primary key, then hackers can easily do attacks.
-    therefore primary key is changed to GUID.
-    GUID type is 'uuid4' (nor rhe function , reference only
-    '''
     id = models.UUIDField(primary_key=True, default=uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    # changed related name from cartitem_set to items.
+    # so in Cart model we have field called items
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
 
