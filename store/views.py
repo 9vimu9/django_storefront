@@ -2,14 +2,15 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from store.filters import ProductFilter
-from store.models import Product, Collection, Review
-from store.serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
+from store.models import Cart, Collection, Product, Review
+from store.serializers import CartSerializer, CollectionSerializer, ProductSerializer, ReviewSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -59,3 +60,17 @@ class ReviewViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
+
+
+class CartViewSet(CreateModelMixin, GenericViewSet):
+    # 'carts' is a URL without any authentication. otherwise users will have to logged before add an item to the cart
+    # If we use ModelViewSet we expose URL endpoints that should not be exposed. like
+    # carts/ -> GET . this will list down all the carts.
+    #
+    # cart operations that we have to expose outside world
+    # ----------------------------------------------------
+    # 1. creating a cart
+    # 2. getting a cart
+    # 3. deleting a cart
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
